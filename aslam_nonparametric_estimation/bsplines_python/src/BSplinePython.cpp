@@ -36,17 +36,21 @@ public:
 
 boost::python::object getBiFunction(const bsplines::BSpline * bs, double t)
 {
-	typedef Eigen::CwiseNullaryOp <BiVector, Eigen::VectorXd> T;
-	return boost::python::make_function(boost::bind(&BiFunction<T>::getBi, BiFunction<T>(bs->getBiVector(t)), _1)
-	 	 , boost::python::default_call_policies(), boost::mpl::vector2<double,int>()
-	);
+    typedef Eigen::CwiseNullaryOp <BiVector, Eigen::VectorXd> T;
+    return boost::python::make_function(boost::bind(&BiFunction<T>::getBi, BiFunction<T>(bs->getBiVector(t)),
+            boost::placeholders::_1), boost::python::default_call_policies(), boost::mpl::vector2<double, int>());
 }
-boost::python::object getCumulativeBiFunction(const bsplines::BSpline * bs, double t)
+
+boost::python::object getCumulativeBiFunction(const bsplines::BSpline* bs, double t)
 {
-	typedef Eigen::CwiseNullaryOp <BiVector, Eigen::VectorXd> T;
-	return boost::python::make_function(boost::bind(&BiFunction<T>::getBi, BiFunction<T>(bs->getCumulativeBiVector(t)), _1)
-	 	 , boost::python::default_call_policies(), boost::mpl::vector2<double,int>()
-	);
+    typedef Eigen::CwiseNullaryOp <BiVector, Eigen::VectorXd> T;
+
+    auto wrapped_function = [bs, t](int arg1) -> double {
+        BiFunction<T> bifunc(bs->getCumulativeBiVector(t));
+        return bifunc.getBi(arg1);  // Call getBi with the int argument
+    };
+
+    return boost::python::make_function(wrapped_function, boost::python::default_call_policies(), boost::mpl::vector2<double, int>());
 }
 
 void import_bspline_python()

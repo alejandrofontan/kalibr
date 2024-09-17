@@ -85,8 +85,8 @@ ${SETUP_PY_TEXT}
       #
       list(APPEND BOOST_COMPONENTS python27)
     endif()
-  else()
-    list(APPEND BOOST_COMPONENTS python38)
+  else()	  
+     list(APPEND BOOST_COMPONENTS python39)
   endif()
   find_package(Boost REQUIRED COMPONENTS ${BOOST_COMPONENTS}) 
 
@@ -109,7 +109,15 @@ ${SETUP_PY_TEXT}
       ENDIF()
     ENDIF()
   ENDIF(APPLE)
-
+  
+  GET_FILENAME_COMPONENT(REAL_PYTHON_INCLUDE ${PYTHON_INCLUDE_DIRS} REALPATH)
+  FIND_PATH(NUMPY_INCLUDE_DIR arrayobject.h
+          ${PYTHON_INCLUDE_DIRS}/site-packages/numpy/core/include/numpy
+  )
+  IF(NOT ${NUMPY_INCLUDE_DIR} MATCHES NOTFOUND)
+    INCLUDE_DIRECTORIES(${NUMPY_INCLUDE_DIR})
+    INCLUDE_DIRECTORIES(${NUMPY_INCLUDE_DIR}/..)
+  ENDIF()
 
   # message("Target files: ${ARGN}")
   # Create the target and assign source files
