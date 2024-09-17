@@ -225,47 +225,50 @@ def plotAzumithalError(cself, cam_id, fno=1, clearFigure=True, stats=None, noSho
         pl.show()
 
 def plotAllReprojectionErrors(cself, cam_id, fno=1, noShow=False, clearFigure=True, title=""):
-    # left: observations and projecitons
+    # left: observations and projections
     # right: scatterplot of reprojection errors
     all_corners, reprojections, rerrs_xy = getReprojectionErrors(cself, cam_id)
     resolution = (cself.cameras[cam_id].geometry.projection().ru(), cself.cameras[cam_id].geometry.projection().rv())
 
-    #create figure
+    # create figure
     f = pl.figure(fno)
-    if clearFigure:    
+    if clearFigure:
         f.clf()
     f.suptitle(title)
-    
-    values = np.arange(len(cself.views))/np.double(len(cself.views))
-    cmap = pl.cm.jet(values,alpha=0.5)
-    
-    #detected corners plot
-    a=pl.subplot(121)
-    for view_id, corners in enumerate(all_corners):
-        if corners is not None: #if this camerea sees the target in this view
-            color = cmap[view_id,:]
-            pl.plot(corners[:,0], corners[:,1],'o-', mfc=color, c=color, mec=color)
 
-    #add an empty image to force the aspect ratio
-    I=np.zeros((resolution[1], resolution[0]))
+    values = np.arange(len(cself.views)) / np.double(len(cself.views))
+    cmap = pl.cm.jet(values, alpha=0.5)
+
+    # detected corners plot
+    a = pl.subplot(121)
+    for view_id, corners in enumerate(all_corners):
+        if corners is not None:  # if this camera sees the target in this view
+            color = cmap[view_id, :]
+            pl.plot(corners[:, 0], corners[:, 1], 'o-', mfc=color, c=color, mec=color)
+
+    # add an empty image to force the aspect ratio
+    I = np.zeros((resolution[1], resolution[0]))
     pl.imshow(I, cmap='Greys')
 
-    #reprojection errors scatter plot
+    # reprojection errors scatter plot
     sub = pl.subplot(122)
     for view_id, rerrs in enumerate(rerrs_xy):
-        if rerrs is not None: #if this camerea sees the target in this view
-            color = cmap[view_id,:]
-            pl.plot(rerrs[:,0], rerrs[:,1], 'x', lw=3, mew=3, color=color)
+        if rerrs is not None:  # if this camera sees the target in this view
+            color = cmap[view_id, :]
+            pl.plot(rerrs[:, 0], rerrs[:, 1], 'x', lw=3, mew=3, color=color)
 
     pl.axis('equal')
     pl.grid('on')
     pl.xlabel('error x (pix)')
     pl.ylabel('error y (pix)')
 
-    SM = pl.cm.ScalarMappable(pl.cm.colors.Normalize(0.0,len(cself.views)), pl.cm.jet)
-    SM.set_array(np.arange(len(cself.views)));
-    cb = pl.colorbar(SM)
+    SM = pl.cm.ScalarMappable(pl.cm.colors.Normalize(0.0, len(cself.views)), pl.cm.jet)
+    SM.set_array(np.arange(len(cself.views)))
+    
+    # Add the colorbar explicitly to the subplot 'sub'
+    cb = pl.colorbar(SM, ax=sub)
     cb.set_label('image index')
+
     if not noShow:
         pl.show()
 
