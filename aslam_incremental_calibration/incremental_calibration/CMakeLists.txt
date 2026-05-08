@@ -6,6 +6,12 @@ set(CMAKE_CXX_STANDARD 14)
 find_package(catkin REQUIRED COMPONENTS sm_eigen aslam_backend)
 find_package(Boost REQUIRED COMPONENTS system thread)
 find_package(Eigen3 REQUIRED)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../aslam_optimizer/sparse_block_matrix/cmake")
+find_package(SuiteSparse REQUIRED)
+if(TARGET Eigen3::Eigen)
+  get_target_property(EIGEN3_INCLUDE_DIRS Eigen3::Eigen INTERFACE_INCLUDE_DIRECTORIES)
+  set(EIGEN3_INCLUDE_DIR ${EIGEN3_INCLUDE_DIRS})
+endif()
 
 catkin_package(
   LIBRARIES ${PROJECT_NAME}
@@ -42,7 +48,7 @@ add_library(${PROJECT_NAME}
   src/algorithms/marginalize.cpp
   src/algorithms/linalg.cpp
 )
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${TBB_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${SUITESPARSE_LIBRARIES} ${TBB_LIBRARIES})
 
 # if(CATKIN_ENABLE_TESTING)
 #   # Avoid clash with tr1::tuple:

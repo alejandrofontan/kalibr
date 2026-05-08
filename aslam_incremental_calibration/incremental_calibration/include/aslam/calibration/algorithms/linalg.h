@@ -35,7 +35,8 @@ struct cholmod_dense_struct;
 typedef cholmod_dense_struct cholmod_dense;
 struct cholmod_common_struct;
 typedef cholmod_common_struct cholmod_common;
-template <typename Entry> struct SuiteSparseQR_factorization;
+
+#include <SuiteSparseQR.hpp>
 
 namespace aslam {
   namespace calibration {

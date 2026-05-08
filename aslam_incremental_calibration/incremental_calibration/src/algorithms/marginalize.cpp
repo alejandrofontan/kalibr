@@ -67,7 +67,7 @@ namespace aslam {
         throw InvalidOperationException("marginalJacobian(): "
           "SuiteSparseQR_qmult failed");
       }
-      std::ptrdiff_t* colIndices = new std::ptrdiff_t[J_x->ncol];
+      SuiteSparse_long* colIndices = new SuiteSparse_long[J_x->ncol];
       for (size_t i = 0; i < J_x->ncol; ++i)
        colIndices[i] = i;
       cholmod_sparse* J_thetatQ = cholmod_l_submatrix(J_thetatQFull, NULL, -1,
@@ -149,7 +149,7 @@ namespace aslam {
       }
 
       // extract the part corresponding to the state/landmarks/...
-      std::ptrdiff_t* colIndices = new std::ptrdiff_t[j];
+      SuiteSparse_long* colIndices = new SuiteSparse_long[j];
       for (size_t i = 0; i < j; ++i)
        colIndices[i] = i;
       cholmod_sparse* J_x = cholmod_l_submatrix(J, NULL, -1, colIndices, j, 1,
@@ -163,7 +163,7 @@ namespace aslam {
       }
 
       // extract the part corresponding to the calibration parameters
-      colIndices = new std::ptrdiff_t[J->ncol - j];
+      colIndices = new SuiteSparse_long[J->ncol - j];
       for (size_t i = j; i < J->ncol; ++i)
        colIndices[i - j] = i;
       cholmod_sparse* J_theta = cholmod_l_submatrix(J, NULL, -1, colIndices,

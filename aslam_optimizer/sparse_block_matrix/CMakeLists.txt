@@ -7,6 +7,9 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
 find_package(SuiteSparse REQUIRED)
 
 find_package(Eigen3)
+if(TARGET Eigen3::Eigen)
+  get_target_property(EIGEN3_INCLUDE_DIRS Eigen3::Eigen INTERFACE_INCLUDE_DIRECTORIES)
+endif()
 
 include_directories(
   include

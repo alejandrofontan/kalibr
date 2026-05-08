@@ -5,6 +5,9 @@ add_definitions(-fPIC -O3)
 
 find_package(catkin REQUIRED)
 find_package(Eigen3 REQUIRED)
+if(TARGET Eigen3::Eigen)
+  get_target_property(EIGEN3_INCLUDE_DIRS Eigen3::Eigen INTERFACE_INCLUDE_DIRECTORIES)
+endif()
 find_package(OpenCV REQUIRED)
 
 catkin_package(

@@ -57,7 +57,10 @@ with open(os.path.join(module_path,'numpy_eigen_export_module.cpp'),'w') as f:
     f.write('{\n')
     f.write('\tusing namespace boost::python;\n')
     f.write('\t// Without this import, the converter will segfault\n');
-    f.write('\timport_array();\n');
+    f.write('\tif (_import_array() < 0) {\n');
+    f.write('\t\tPyErr_SetString(PyExc_ImportError, "numpy.core.multiarray failed to import");\n');
+    f.write('\t\treturn;\n');
+    f.write('\t}\n');
     f.write('\n');
     for d1 in dimTags:
         for d2 in dimTags:
@@ -130,5 +133,4 @@ with open(os.path.join(module_path,'numpy_eigen_test_module.cpp'),'w') as f:
     f.write('\n')
     f.write('}\n')
     f.write('\n')
-
 

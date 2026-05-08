@@ -7,6 +7,9 @@ find_package(catkin REQUIRED COMPONENTS sm_common)
 find_package(Boost REQUIRED COMPONENTS system filesystem)
 
 find_package(Eigen3 REQUIRED)
+if(TARGET Eigen3::Eigen)
+  get_target_property(EIGEN3_INCLUDE_DIRS Eigen3::Eigen INTERFACE_INCLUDE_DIRECTORIES)
+endif()
 
 catkin_package(
   INCLUDE_DIRS include ${catkin_INCLUDE_DIRS}

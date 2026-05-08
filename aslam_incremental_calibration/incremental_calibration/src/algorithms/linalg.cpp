@@ -26,7 +26,6 @@
 
 #include <cholmod.h>
 #include <SuiteSparseQR.hpp>
-#include <spqr.hpp>
 
 #include "aslam/calibration/exceptions/OutOfBoundException.h"
 #include "aslam/calibration/exceptions/InvalidOperationException.h"
@@ -60,7 +59,7 @@ namespace aslam {
         throw NullPointerException("cholmod", __FILE__, __LINE__,
           __PRETTY_FUNCTION__);
       const std::ptrdiff_t numIndices = colEndIdx - colStartIdx + 1;
-      std::ptrdiff_t* colIndices = new std::ptrdiff_t[numIndices];
+      SuiteSparse_long* colIndices = new SuiteSparse_long[numIndices];
       for (std::ptrdiff_t j = colStartIdx; j <= colEndIdx; ++j)
         colIndices[j - colStartIdx] = j;
       cholmod_sparse* A_sub = cholmod_l_submatrix(A, NULL, -1, colIndices,
@@ -92,7 +91,7 @@ namespace aslam {
         throw NullPointerException("cholmod", __FILE__, __LINE__,
           __PRETTY_FUNCTION__);
       const std::ptrdiff_t numIndices = rowEndIdx - rowStartIdx + 1;
-      std::ptrdiff_t* rowIndices = new std::ptrdiff_t[numIndices];
+      SuiteSparse_long* rowIndices = new SuiteSparse_long[numIndices];
       for (std::ptrdiff_t i = rowStartIdx; i <= rowEndIdx; ++i)
        rowIndices[i - rowStartIdx] = i;
       cholmod_sparse* A_sub = cholmod_l_submatrix(A, rowIndices, numIndices,
@@ -268,8 +267,20 @@ namespace aslam {
       if (cholmod == NULL)
         throw NullPointerException("cholmod", __FILE__, __LINE__,
           __PRETTY_FUNCTION__);
-      return 20.0 * static_cast<double>(A->nrow + A->ncol) * eps *
-        spqr_maxcolnorm<double>(A, cholmod);
+      const SuiteSparse_long* col_ptr =
+        reinterpret_cast<const SuiteSparse_long*>(A->p);
+      const double* values = reinterpret_cast<const double*>(A->x);
+      double maxColNorm = 0.0;
+      for (SuiteSparse_long j = 0;
+          j < static_cast<SuiteSparse_long>(A->ncol); ++j) {
+        const SuiteSparse_long p = col_ptr[j];
+        const SuiteSparse_long numElements = col_ptr[j + 1] - p;
+        double norm = 0.0;
+        for (SuiteSparse_long i = 0; i < numElements; ++i)
+          norm += values[p + i] * values[p + i];
+        maxColNorm = std::max(maxColNorm, std::sqrt(norm));
+      }
+      return 20.0 * static_cast<double>(A->nrow + A->ncol) * eps * maxColNorm;
     }
 
     double svGap(const Eigen::VectorXd& sv, std::ptrdiff_t rank) {

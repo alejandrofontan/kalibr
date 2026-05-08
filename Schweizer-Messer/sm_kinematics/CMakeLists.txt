@@ -7,6 +7,9 @@ find_package(catkin REQUIRED COMPONENTS sm_common sm_eigen sm_boost sm_random)
 find_package(Boost REQUIRED COMPONENTS system serialization filesystem)
 
 find_package(Eigen3 REQUIRED)
+if(TARGET Eigen3::Eigen)
+  get_target_property(EIGEN3_INCLUDE_DIRS Eigen3::Eigen INTERFACE_INCLUDE_DIRECTORIES)
+endif()
 include_directories(${EIGEN3_INCLUDE_DIRS})
 add_definitions(${EIGEN_DEFINITIONS})
 

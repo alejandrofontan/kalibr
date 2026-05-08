@@ -132,8 +132,10 @@ inline const char * npyTypeToString(int npyType)
       return "NPY_UNICODE";
     case NPY_VOID:
       return "NPY_VOID";
+#ifdef NPY_NTYPES
     case NPY_NTYPES:
       return "NPY_NTYPES";
+#endif
     case NPY_NOTYPE:
       return "NPY_NOTYPE";
     default:

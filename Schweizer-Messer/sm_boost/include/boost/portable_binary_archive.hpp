@@ -28,7 +28,11 @@
 #endif
 
 #include <boost/archive/basic_archive.hpp>
-#include <endian.h>
+#include <boost/predef/other/endian.h>
+
+#if BOOST_ENDIAN_BIG_BYTE
+#  define BOOST_BIG_ENDIAN
+#endif
 
 
 namespace boost {

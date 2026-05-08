@@ -21,6 +21,12 @@ import sys
 import random
 import signal
 
+if sys.platform == "darwin":
+    try:
+        multiprocessing.set_start_method("fork")
+    except RuntimeError:
+        pass
+
 np.set_printoptions(suppress=True)
 
 def initBagDataset(bagfile, topic, from_to, freq):
@@ -175,7 +181,7 @@ def main():
             cam = kcc.CameraGeometry(cameraModel, targetConfig, dataset, verbose=(parsed.verbose or parsed.showextraction))
                 
             #extract the targets
-            multithreading = not (parsed.verbose or parsed.showextraction)
+            multithreading = not (parsed.verbose or parsed.showextraction or sys.platform == "darwin")
             observations = kc.extractCornersFromDataset(cam.dataset, cam.ctarget.detector, 
                                                         multithreading=multithreading, clearImages=False,
                                                         noTransformation=True)

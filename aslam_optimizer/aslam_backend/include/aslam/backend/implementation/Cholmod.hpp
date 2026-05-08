@@ -129,6 +129,12 @@ namespace aslam {
       }
     };
 
+#if defined(__APPLE__)
+    template<>
+    struct CholmodIndexTraits<long> : public CholmodIndexTraits<SuiteSparse_long> {
+    };
+#endif
+
 
 
     // Some bits of this code were derived from the ceres solver:
@@ -445,8 +451,9 @@ namespace aslam {
     template<typename I>
     void Cholmod<I>::getR(cholmod_sparse* A, cholmod_sparse** R) {
       cholmod_sparse* qrJ = cholmod_l_transpose(A, 1, &_cholmod);
-      SuiteSparseQR<double>(SPQR_ORDERING_FIXED, SPQR_NO_TOL, qrJ->ncol, 0,
-        qrJ, NULL, NULL, NULL, NULL, R, NULL, NULL, NULL, NULL, &_cholmod);
+      SuiteSparseQR<double, index_t>(SPQR_ORDERING_FIXED, SPQR_NO_TOL,
+        static_cast<index_t>(qrJ->ncol), 0, qrJ, nullptr, nullptr, nullptr,
+        nullptr, R, nullptr, nullptr, nullptr, nullptr, &_cholmod);
       SM_ASSERT_EQ(Exception, _cholmod.status, CHOLMOD_OK,
         "QR factorization failed");
       CholmodIndexTraits<index_t>::free_sparse(&qrJ, &_cholmod);
